@@ -1,7 +1,8 @@
 gradle-swagger-plugin
 =====================
 
-This a port of kongchen's maven plugin for generating swagger documents.  (See https://github.com/kongchen/swagger-maven-plugin)
+This repo is a fork from https://github.com/dave-ellis/gradle-swagger-plugin and is a port of kongchen's maven plugin version 3.1.4.
+That version depends from the official swagger package (io.swagger) instead of com.wordnik package.
 
 # Usage
 
@@ -43,7 +44,3 @@ This a port of kongchen's maven plugin for generating swagger documents.  (See h
     * `useOutputFlatStructure` indicates whether swagger output will be created in sub-directories by path defined in
       `@com.wordnik.swagger.annotations.Api#value` (false), or the filename will be the path with replaced slashes to
       underscores (true). Default: true
-
-# Continuous Integration
-
-This repository has been integrated with `Travis` (see https://travis-ci.org/dave-ellis/gradle-swagger-plugin).

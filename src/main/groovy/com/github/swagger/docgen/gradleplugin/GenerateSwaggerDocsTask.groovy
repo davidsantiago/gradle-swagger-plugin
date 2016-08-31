@@ -1,6 +1,9 @@
 package com.github.swagger.docgen.gradleplugin
 
-import com.wordnik.swagger.core.SwaggerContext
+import com.github.kongchen.swagger.docgen.plugin.ApiDocumentMojo
+import com.github.kongchen.swagger.docgen.plugin.ApiSource
+import io.swagger.models.Info
+
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -19,11 +22,29 @@ class GenerateSwaggerDocsTask extends DefaultTask {
         File classesDir = project.sourceSets.main.output.classesDir
 
         project.logger.debug "Swagger outputPath=${swagger.outputPath}, outputTemplate=${swagger.outputTemplate}"
-        ClassLoader classLoader = prepareClassLoader(dependencies, classesDir)
-        SwaggerContext.registerClassLoader(classLoader)
 
-        new SwaggerDocumentGenerator(classLoader)
-                .generateSwaggerDocuments(swagger)
+        ApiSource apiSource = new ApiSource();
+        String locations = String.join(";", swagger.endPoints)
+        apiSource.setLocations(locations)
+        apiSource.setInfo(new Info());
+        apiSource.getInfo().setVersion(swagger.apiVersion)
+        apiSource.setBasePath(swagger.basePath)
+        apiSource.setSwaggerDirectory(swagger.swaggerDirectory)
+        apiSource.getInfo().setTitle(swagger.title)
+        apiSource.setHost(swagger.host)
+        apiSource.getInfo().setTermsOfService(swagger.termsOfService)
+        apiSource.getInfo().setDescription(swagger.description)
+        apiSource.setSchemes(swagger.schemes)
+        apiSource.setSwaggerDirectoryEncoding(swagger.swaggerDirectoryEncoding)
+
+        project.logger.debug "locations=${locations} ApiSource=${apiSource}"
+
+        ClassLoader classLoader = prepareClassLoader(dependencies, classesDir)
+
+        ApiDocumentMojo documentMojo = new ApiDocumentMojo();
+        List<ApiSource> apiSources = new ArrayList<ApiSource>();
+        apiSources.add(apiSource);
+        documentMojo.execute(logger, apiSources, classLoader)
     }
 
     URLClassLoader prepareClassLoader(Iterable<File> dependencies, File dir) {
